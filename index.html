@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#0a0a0a" />
+<title>AgraCric</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  :root{ --bg:#0a0a0a; --card:#141414; --card2:#1c1c1c; --line:rgba(255,255,255,.08); --txt:#f5f1ea; --mut:#8a8a8a; --grn:#2ecc71; --red:#e74c3c; --acc:#3a86ff; --amb:#f0a500; }
+  body{ background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; min-height:100vh; padding-bottom:74px; }
+  .wrap{ max-width:520px; margin:0 auto; padding:14px 14px 20px; }
+  h1,h2,h3{ font-weight:700; letter-spacing:-.02em; }
+  .logo{ text-align:center; padding:14px 0 6px; }
+  .logo b{ font-size:24px; letter-spacing:-.03em; } .logo b span{ color:var(--grn); }
+  .logo small{ display:block; color:var(--mut); font-size:10px; letter-spacing:.2em; text-transform:uppercase; margin-top:2px; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:15px; margin-bottom:12px; }
+  .card.tap{ cursor:pointer; transition:transform .08s; } .card.tap:active{ transform:scale(.99); }
+  .row{ display:flex; gap:10px; } .row>*{ flex:1; }
+  label{ display:block; font-size:11px; color:var(--mut); margin:0 0 5px 2px; text-transform:uppercase; letter-spacing:.08em; }
+  input,select{ width:100%; background:var(--card2); border:1px solid var(--line); color:var(--txt); padding:12px; border-radius:10px; font-size:15px; margin-bottom:11px; }
+  input:focus,select:focus{ outline:none; border-color:var(--acc); }
+  button{ cursor:pointer; border:none; border-radius:12px; font-size:15px; font-weight:600; padding:13px; color:#fff; background:var(--acc); transition:transform .08s,opacity .2s; }
+  button:active{ transform:scale(.97); }
+  button.ghost{ background:var(--card2); border:1px solid var(--line); }
+  button.grn{ background:var(--grn);color:#111 } button.red{ background:var(--red); } button.amb{ background:var(--amb);color:#111; }
+  button.sm{ padding:9px 14px; font-size:13px; }
+  button.on{ background:var(--grn); color:#111; }
+  .hide{ display:none !important; }
+  .mut{ color:var(--mut); } .center{ text-align:center; } .mt{ margin-top:12px; }
+  .sec-title{ font-size:13px; color:var(--mut); text-transform:uppercase; letter-spacing:.1em; margin:6px 2px 10px; }
+  hr{ border:none; border-top:1px solid var(--line); margin:13px 0; }
+  .pill{ display:inline-block; background:var(--card2); border:1px solid var(--line); border-radius:20px; padding:5px 12px; font-size:11px; color:var(--mut); }
+  .pill.live{ color:#fff; } .live-dot{ display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);margin-right:5px;animation:pulse 1.3s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .avatar{ width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,#2c2c2c,#161616); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; flex:none; }
+  .listitem{ display:flex; align-items:center; gap:12px; padding:11px 0; border-top:1px solid var(--line); }
+  .listitem:first-child{ border-top:none; }
+  .listitem .meta{ flex:1; min-width:0; } .listitem .meta b{ font-size:15px; } .listitem .meta div{ font-size:12px; color:var(--mut); margin-top:1px; }
+  .listitem .val{ text-align:right; font-size:13px; }
+  .sb{ text-align:center; padding:14px 0 8px; }
+  .sb .teams{ font-size:12px; color:var(--mut); margin-bottom:6px; }
+  .sb .big{ font-size:44px; font-weight:800; letter-spacing:-.04em; line-height:1; } .sb .big small{ font-size:20px;color:var(--mut); }
+  .sb .ov{ color:var(--mut); font-size:13px; margin-top:5px; } .sb .crr{ color:var(--grn); font-size:12px; margin-top:3px; } .sb .target{ color:var(--amb); font-size:13px;margin-top:7px;font-weight:600; }
+  .stat-tbl{ width:100%; font-size:13px; border-collapse:collapse; }
+  .stat-tbl th{ color:var(--mut); font-weight:500; text-align:right; padding:5px 3px; font-size:10px; text-transform:uppercase; }
+  .stat-tbl th:first-child{ text-align:left; } .stat-tbl td{ padding:6px 3px; text-align:right; border-top:1px solid var(--line); } .stat-tbl td:first-child{ text-align:left; }
+  .strike{ color:var(--grn); } .strike::after{ content:" •"; }
+  .overball{ display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 6px;border-radius:16px;background:var(--card2);border:1px solid var(--line);font-size:12px;font-weight:700;margin:3px; }
+  .ob-w{ background:var(--red); } .ob-4{ background:#2d6a4f; } .ob-6{ background:var(--grn);color:#111; } .ob-x{ background:var(--amb);color:#111; }
+  .pad{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .pad button{ padding:17px 0; font-size:18px; font-weight:700; background:var(--card2); border:1px solid var(--line); }
+  .pad .run4{ background:#2d6a4f; } .pad .run6{ background:var(--grn);color:#111; }
+  .pad2{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px; }
+  .pad2 button{ font-size:13px; padding:13px 0; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .stat-box{ background:var(--card2); border:1px solid var(--line); border-radius:12px; padding:12px; text-align:center; }
+  .stat-box b{ font-size:22px; display:block; } .stat-box span{ font-size:11px; color:var(--mut); text-transform:uppercase; letter-spacing:.05em; }
+  .seg{ display:flex; background:var(--card2); border-radius:10px; padding:4px; margin-bottom:12px; }
+  .seg button{ flex:1; background:transparent; color:var(--mut); padding:9px; font-size:13px; border-radius:8px; }
+  .seg button.on{ background:var(--acc); color:#fff; }
+  .nav{ position:fixed; bottom:0; left:0; right:0; background:rgba(12,12,12,.96); backdrop-filter:blur(12px); border-top:1px solid var(--line); display:flex; z-index:50; }
+  .nav button{ flex:1; background:none; border:none; color:var(--mut); font-size:9.5px; font-weight:600; padding:9px 0 11px; display:flex; flex-direction:column; align-items:center; gap:3px; border-radius:0; }
+  .nav button .ic{ font-size:18px; } .nav button.on{ color:var(--grn); }
+  .modal-bg{ position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:80; display:flex; align-items:flex-end; justify-content:center; }
+  .modal{ background:var(--card); border:1px solid var(--line); border-radius:18px 18px 0 0; width:100%; max-width:520px; padding:18px 16px 26px; max-height:80vh; overflow-y:auto; }
+  .modal h3{ margin-bottom:12px; }
+  .pickbtn{ width:100%; text-align:left; background:var(--card2); border:1px solid var(--line); margin-bottom:8px; display:flex; align-items:center; gap:10px; }
+  .toast{ position:fixed; bottom:88px; left:50%; transform:translateX(-50%); background:#fff; color:#111; padding:11px 18px; border-radius:30px; font-weight:600; font-size:14px; opacity:0; pointer-events:none; transition:opacity .25s; z-index:99; } .toast.show{ opacity:1; }
+  .tosspick{ display:flex; gap:10px; margin-bottom:14px; } .tosspick button{ flex:1; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><b>Agra<span>Cric</span></b><small>Cricket • Stats • Leagues</small></div>
+
+  <!-- DASHBOARD -->
+  <div id="s-dash" class="screen">
+    <div class="card">
+      <button class="grn" onclick="newMatchFlow()">＋ New Match</button>
+      <button class="ghost mt" onclick="openRegister()">Register as Player</button>
+    </div>
+    <div class="sec-title">Live & Recent</div>
+    <div id="dashMatches"></div>
+  </div>
+
+  <!-- MATCHES -->
+  <div id="s-matches" class="screen hide">
+    <div class="card"><button class="grn" onclick="newMatchFlow()">＋ New Match</button></div>
+    <div class="sec-title">All Matches</div>
+    <div id="matchList"></div>
+  </div>
+
+  <!-- TOURNAMENTS -->
+  <div id="s-tourneys" class="screen hide">
+    <div class="card"><button class="grn" onclick="openCreateTournament()">＋ Create Tournament</button></div>
+    <div class="sec-title">Tournaments</div>
+    <div id="tourneyList"></div>
+  </div>
+
+  <!-- PLAYERS -->
+  <div id="s-players" class="screen hide">
+    <div class="card"><button class="grn" onclick="openRegister()">＋ Register Player</button></div>
+    <div class="sec-title">Players</div>
+    <input id="playerSearch" placeholder="Search players…" oninput="renderPlayers()" />
+    <div id="playerList"></div>
+  </div>
+
+  <!-- TEAMS -->
+  <div id="s-teams" class="screen hide">
+    <div class="card"><button class="grn" onclick="openCreateTeam()">＋ Create Team</button></div>
+    <div class="sec-title">Teams</div>
+    <div id="teamList"></div>
+  </div>
+
+  <!-- STATS -->
+  <div id="s-stats" class="screen hide">
+    <div class="sec-title">Leaderboards (all matches)</div>
+    <div class="card"><h3 style="font-size:15px;margin-bottom:10px">🏏 Most Runs</h3><div id="lbRuns"></div></div>
+    <div class="card"><h3 style="font-size:15px;margin-bottom:10px">🎯 Most Wickets</h3><div id="lbWkts"></div></div>
+    <div class="card"><h3 style="font-size:15px;margin-bottom:10px">💥 Most Sixes</h3><div id="lbSixes"></div></div>
+  </div>
+
+  <!-- PROFILE -->
+  <div id="s-profile" class="screen hide">
+    <button class="ghost sm" onclick="back()">← Back</button>
+    <div class="card mt" style="text-align:center">
+      <div class="avatar" id="prAv" style="width:64px;height:64px;font-size:24px;margin:0 auto 10px"></div>
+      <h2 id="prName">—</h2><div class="mut" id="prRole" style="font-size:13px;margin-top:3px"></div>
+    </div>
+    <div class="sec-title">Batting</div><div class="grid2" id="prBat"></div>
+    <div class="sec-title mt">Bowling</div><div class="grid2" id="prBowl"></div>
+    <div class="sec-title mt">Fielding</div><div class="grid3" id="prField"></div>
+  </div>
+
+  <!-- TEAM VIEW -->
+  <div id="s-teamview" class="screen hide">
+    <button class="ghost sm" onclick="back()">← Back</button>
+    <div class="card mt"><h2 id="tvName">—</h2><div class="mut" id="tvCount" style="font-size:13px;margin-top:3px"></div></div>
+    <button class="ghost" onclick="addToTeamFlow()">＋ Add Player</button>
+    <div class="sec-title mt">Squad</div><div id="tvSquad"></div>
+  </div>
+
+  <!-- TOURNAMENT VIEW -->
+  <div id="s-tourview" class="screen hide">
+    <button class="ghost sm" onclick="back()">← Back</button>
+    <div class="card mt"><h2 id="tnvName">—</h2><div class="mut" id="tnvMeta" style="font-size:13px;margin-top:3px"></div></div>
+    <div class="sec-title">Points Table</div>
+    <div class="card"><table class="stat-tbl"><thead><tr><th>Team</th><th>P</th><th>W</th><th>L</th><th>Pts</th><th>NRR</th></tr></thead><tbody id="tnvStandings"></tbody></table></div>
+    <div class="sec-title">Top Performers</div>
+    <div class="card"><b style="font-size:13px">🏏 Orange Cap (runs)</b><div id="tnvOrange" class="mt"></div><hr/><b style="font-size:13px">🎯 Purple Cap (wickets)</b><div id="tnvPurple" class="mt"></div></div>
+    <div class="sec-title">Matches</div>
+    <div id="tnvMatches"></div>
+  </div>
+
+  <!-- MATCH SETUP -->
+  <div id="s-setup" class="screen hide">
+    <button class="ghost sm" onclick="back()">← Back</button>
+    <div class="card mt">
+      <h3 style="margin-bottom:12px">New Match</h3>
+      <label>Tournament (optional)</label><select id="suTourney"></select>
+      <label>Team A</label><select id="suTeamA"></select>
+      <label>Team B</label><select id="suTeamB"></select>
+      <label>Overs</label>
+      <select id="suOvers"><option value="20">T20 — 20</option><option value="10">T10 — 10</option><option value="8">8</option><option value="6">6</option><option value="custom">Custom</option></select>
+      <div id="suCustomBox" class="hide"><label>Custom overs</label><input id="suCustom" type="number" value="6" min="1" max="50"/></div>
+      <hr/>
+      <h3 style="font-size:14px;margin-bottom:8px">Rules (tennis-ball default)</h3>
+      <label>Overs per bowler (0 = no limit)</label><input id="suOPB" type="number" value="0" min="0"/>
+      <div class="row"><div><label>Wide runs</label><input id="suWide" type="number" value="1" min="1"/></div><div><label>No-ball runs</label><input id="suNB" type="number" value="1" min="1"/></div></div>
+      <button class="grn mt" onclick="gotoToss()">Next — Toss →</button>
+    </div>
+  </div>
+
+  <!-- TOSS -->
+  <div id="s-toss" class="screen hide">
+    <button class="ghost sm" onclick="back()">← Back</button>
+    <div class="card mt">
+      <h3 style="margin-bottom:12px">🪙 Toss</h3>
+      <label>Who won the toss?</label>
+      <div class="tosspick"><button class="ghost" id="tossA" onclick="setToss('A')">Team A</button><button class="ghost" id="tossB" onclick="setToss('B')">Team B</button></div>
+      <label>Elected to</label>
+      <div class="tosspick"><button class="ghost" id="tossBat" onclick="setDecision('bat')">🏏 Bat</button><button class="ghost" id="tossBowl" onclick="setDecision('bowl')">🎯 Bowl</button></div>
+      <button class="grn mt" onclick="confirmToss()">Start Innings</button>
+    </div>
+  </div>
+
+  <!-- LIVE MATCH -->
+  <div id="s-match" class="screen hide">
+    <button class="ghost sm" onclick="leaveMatch()">← Matches</button>
+    <div class="card sb mt">
+      <div class="teams" id="mTeams">—</div>
+      <div class="big" id="mScore">0<small>/0</small></div>
+      <div class="ov" id="mOvers">0.0 overs</div>
+      <div class="crr" id="mCrr"></div>
+      <div class="mut" id="mToss" style="font-size:12px;margin-top:4px"></div>
+      <div class="target" id="mTarget"></div>
+      <div class="mt"><span class="pill" id="mCode">—</span> <span class="pill live"><span class="live-dot"></span>LIVE</span></div>
+    </div>
+    <div class="card">
+      <table class="stat-tbl"><thead><tr><th>Batter</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead><tbody id="mBat"></tbody></table>
+      <hr/>
+      <table class="stat-tbl"><thead><tr><th>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th><th>Econ</th></tr></thead><tbody id="mBowl"></tbody></table>
+    </div>
+    <div class="card"><label>This over</label><div id="mOver" class="mut">—</div></div>
+    <div id="mScorer">
+      <div class="card">
+        <div class="pad">
+          <button onclick="ball(0)">0</button><button onclick="ball(1)">1</button>
+          <button onclick="ball(2)">2</button><button onclick="ball(3)">3</button>
+          <button class="run4" onclick="ball(4)">4</button><button class="run6" onclick="ball(6)">6</button>
+          <button onclick="ball(5)">5</button><button class="red" onclick="wicket()">OUT</button>
+        </div>
+        <div class="pad2">
+          <button class="amb" onclick="extra('wd')">Wide</button>
+          <button class="amb" onclick="extra('nb')">No Ball</button>
+          <button class="amb" onclick="extra('bye')">Bye</button>
+          <button class="amb" onclick="extra('lb')">Leg Bye</button>
+          <button class="ghost" onclick="addRuns()">＋ Bonus</button>
+          <button class="ghost" onclick="changeBowler()">Bowler</button>
+          <button class="ghost" onclick="undo()">↩ Undo</button>
+          <button class="ghost" onclick="swapStrike()">⇄ Swap</button>
+          <button class="grn" onclick="endInnings()">End Inns</button>
+        </div>
+      </div>
+      <div class="card"><label>Share with viewers</label><div class="mut" id="mShare" style="font-size:12px;word-break:break-all">—</div><button class="ghost mt sm" onclick="copyShare()">Copy Link</button></div>
+    </div>
+  </div>
+
+  <!-- SCORECARD -->
+  <div id="s-card" class="screen hide">
+    <button class="ghost sm" onclick="back()">← Back</button>
+    <div id="cardBody" class="mt"></div>
+  </div>
+</div>
+
+<div class="nav">
+  <button id="n-dash" class="on" onclick="go('dash')"><span class="ic">🏠</span>Home</button>
+  <button id="n-matches" onclick="go('matches')"><span class="ic">🏏</span>Matches</button>
+  <button id="n-tourneys" onclick="go('tourneys')"><span class="ic">🏆</span>Leagues</button>
+  <button id="n-players" onclick="go('players')"><span class="ic">👤</span>Players</button>
+  <button id="n-teams" onclick="go('teams')"><span class="ic">👥</span>Teams</button>
+  <button id="n-stats" onclick="go('stats')"><span class="ic">📊</span>Stats</button>
+</div>
+
+<div id="modal" class="modal-bg hide"><div class="modal"><h3 id="modalTitle"></h3><div id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
