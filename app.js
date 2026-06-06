@@ -332,15 +332,116 @@
     const batted = Object.keys(inn.batters);
     pickFromTeam(inn.batTeamId, "New batter", (nb) => { ensureBat(inn, nb.id, nb.name); M.striker = nb; legalBall(); save(); }, batted.concat([M.nonStriker.id]));
   }
+window.extra = function(type){
 
-  window.extra = function (type) {
-    if (guard()) return; snap(); const inn = curInn(); const bw = inn.bowlers[M.bowler.id]; const r = M.rules;
-    if (type === "wd") { inn.runs += r.wideRuns; bw.runs += r.wideRuns; bw._ov += r.wideRuns; M.thisOver.push(r.wideRuns > 1 ? "wd" + r.wideRuns : "wd"); }
-    else if (type === "nb") { inn.runs += r.nbRuns; bw.runs += r.nbRuns; bw._ov += r.nbRuns; M.thisOver.push(r.nbRuns > 1 ? "nb" + r.nbRuns : "nb"); }
-    else if (type === "bye") { inn.runs++; M.thisOver.push("b"); legalBall(); }
-    else if (type === "lb") { inn.runs++; M.thisOver.push("lb"); legalBall(); }
-    save();
-  };
+    if (guard()) return;
+
+    snap();
+
+    const inn = curInn();
+    const bw = inn.bowlers[M.bowler.id];
+
+    // WIDE
+    if(type === "wd"){
+
+        let extraRuns = parseInt(
+            prompt(
+                "Additional runs after wide?\n\n0 = only wide\n1 = wide + run\n4 = wide boundary",
+                "0"
+            )
+        );
+
+        if(isNaN(extraRuns)) return;
+
+        const total = 1 + extraRuns;
+
+        inn.runs += total;
+        bw.runs += total;
+        bw._ov += total;
+
+        M.thisOver.push(
+            extraRuns === 0
+                ? "WD"
+                : "WD+" + extraRuns
+        );
+
+        save();
+        return;
+    }
+
+    // NO BALL FROM BAT
+    if(type === "nb"){
+
+        let batRuns = parseInt(
+            prompt(
+                "Runs scored from bat?\n\n0 1 2 3 4 6",
+                "0"
+            )
+        );
+
+        if(isNaN(batRuns)) return;
+
+        const bt = inn.batters[M.striker.id];
+
+        inn.runs += 1 + batRuns;
+
+        bt.r += batRuns;
+
+        if(batRuns === 4) bt.f++;
+        if(batRuns === 6) bt.s++;
+
+        bw.runs += 1 + batRuns;
+        bw._ov += 1 + batRuns;
+
+        M.thisOver.push(
+            batRuns === 0
+                ? "NB"
+                : "NB+" + batRuns
+        );
+
+        save();
+        return;
+    }
+
+    // BYE
+    if(type === "bye"){
+
+        let runs = parseInt(
+            prompt("Bye runs? (1-4)", "1")
+        );
+
+        if(isNaN(runs) || runs < 1) return;
+
+        inn.runs += runs;
+
+        M.thisOver.push("B" + runs);
+
+        legalBall();
+
+        save();
+        return;
+    }
+
+    // LEG BYE
+    if(type === "lb"){
+
+        let runs = parseInt(
+            prompt("Leg bye runs? (1-4)", "1")
+        );
+
+        if(isNaN(runs) || runs < 1) return;
+
+        inn.runs += runs;
+
+        M.thisOver.push("LB" + runs);
+
+        legalBall();
+
+        save();
+        return;
+    }
+};
+  
   window.addRuns = function () { if (guard()) return; const n = parseInt(prompt("Bonus/penalty runs to add to batting side?", "5") || "0", 10); if (!n) return; snap(); curInn().runs += n; M.thisOver.push("+" + n); save(); toast("+" + n + " runs"); };
   window.swapStrike = function () { if (guard()) return; snap(); swap(); save(); };
   window.changeBowler = function () { if (guard()) return; const inn = curInn(); pickFromTeam(inn.bowlTeamId, "Select bowler", (bw) => { snap(); ensureBowl(inn, bw.id, bw.name); if (M.rules.oversPerBowler > 0) { const o = Math.floor(inn.bowlers[bw.id].balls / 6); if (o >= M.rules.oversPerBowler) toast("⚠ " + bw.name + " at over limit"); } M.bowler = bw; save(); }); };
