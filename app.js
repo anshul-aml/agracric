@@ -218,7 +218,28 @@
   // ====== MATCH MODEL ======
   let M = null, matchRef = null, isScorer = false, history = [];
   let pend = null; // pending setup before toss
-  function inningsObj(bId, bName, wId, wName) { return { batTeamId: bId, batTeamName: bName, bowlTeamId: wId, bowlTeamName: wName, runs: 0, wkts: 0, balls: 0, batters: {}, bowlers: {} }; }
+  function inningsObj(bId, bName, wId, wName) {
+  return {
+    batTeamId: bId,
+    batTeamName: bName,
+    bowlTeamId: wId,
+    bowlTeamName: wName,
+
+    runs: 0,
+    wkts: 0,
+    balls: 0,
+
+    extras: {
+      wides: 0,
+      noballs: 0,
+      byes: 0,
+      legbyes: 0
+    },
+
+    batters: {},
+    bowlers: {}
+  };
+}
   function curInn() { return M.innings[M.cur]; }
   function ensureBat(inn, id, name) { if (!inn.batters[id]) inn.batters[id] = { id, name, r: 0, b: 0, f: 0, s: 0, out: false, outType: "", outBy: "", outBowler: "" }; }
   function ensureBowl(inn, id, name) { if (!inn.bowlers[id]) inn.bowlers[id] = { id, name, balls: 0, runs: 0, wkts: 0, maidens: 0, _ov: 0 }; }
