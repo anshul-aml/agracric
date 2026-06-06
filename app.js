@@ -508,7 +508,22 @@ window.extra = function(type){
     $("mScore").innerHTML = inn.runs + '<small>/' + inn.wkts + "</small>"; $("mOvers").textContent = oversStr(inn.balls) + " overs";
     const od = inn.balls / 6; $("mCrr").textContent = od > 0 ? "CRR " + (inn.runs / od).toFixed(2) : "";
     $("mToss").textContent = d.toss && d.toss.winnerName ? d.toss.winnerName + " won toss, chose to " + d.toss.decision : "";
-    if (d.cur === 1 && d.target != null && !d.done) { const need = d.target - inn.runs; const bl = d.overs * 6 - inn.balls; $("mTarget").textContent = "Need " + need + " off " + bl; }
+    if (d.cur === 1 && d.target != null && !d.done) {
+
+    const need = d.target - inn.runs;
+    const bl = d.overs * 6 - inn.balls;
+
+    let rrr = 0;
+
+    if (bl > 0) {
+        rrr = (need * 6 / bl).toFixed(2);
+    }
+
+    $("mTarget").innerHTML =
+        "Need " + need +
+        " off " + bl +
+        "<br><small>RRR " + rrr + "</small>";
+}
     else if (d.done) $("mTarget").textContent = d.result; else $("mTarget").textContent = "";
     $("mCode").textContent = "CODE " + d.code;
     const sId = d.striker && d.striker.id, nsId = d.nonStriker && d.nonStriker.id;
