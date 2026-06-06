@@ -506,7 +506,20 @@ window.extra = function(type){
     const inn = d.innings[d.cur];
     $("mTeams").textContent = inn.batTeamName + " vs " + inn.bowlTeamName + "  •  Inns " + (d.cur + 1) + " / " + d.overs + " ov";
     $("mScore").innerHTML = inn.runs + '<small>/' + inn.wkts + "</small>"; $("mOvers").textContent = oversStr(inn.balls) + " overs";
-    const od = inn.balls / 6; $("mCrr").textContent = od > 0 ? "CRR " + (inn.runs / od).toFixed(2) : "";
+    const od = inn.balls / 6; $("mCrr").innerHTML =
+    (od > 0
+        ? "CRR " + (inn.runs / od).toFixed(2)
+        : "")
+    +
+    "<br>Partnership "
+    +
+    partnershipRuns
+    +
+    " ("
+    +
+    partnershipBalls
+    +
+    ")";
     $("mToss").textContent = d.toss && d.toss.winnerName ? d.toss.winnerName + " won toss, chose to " + d.toss.decision : "";
     if (d.cur === 1 && d.target != null && !d.done) {
 
@@ -529,6 +542,15 @@ window.extra = function(type){
    
     let partnershipRuns = 0;
 let partnershipBalls = 0;
+    Object.values(inn.batters || {}).forEach((b) => {
+
+    if (!b.out) {
+
+        partnershipRuns += b.r;
+        partnershipBalls += b.b;
+    }
+
+});
     const br = $("mBat"); br.innerHTML = "";
     Object.values(inn.batters || {}).forEach((b) => { if (b.out || b.id === sId || b.id === nsId) { const sr = b.b ? (b.r / b.b * 100).toFixed(0) : "0"; const cls = b.id === sId && !d.done ? "strike" : ""; br.innerHTML += `<tr><td class="${cls}">${esc(b.name)}${b.out ? " (out)" : ""}</td><td>${b.r}</td><td>${b.b}</td><td>${b.f}</td><td>${b.s}</td><td>${sr}</td></tr>`; } });
     const wId = d.bowler && d.bowler.id; const wr = $("mBowl"); wr.innerHTML = "";
