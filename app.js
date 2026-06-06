@@ -526,7 +526,9 @@ window.extra = function(type){
 }
     else if (d.done) $("mTarget").textContent = d.result; else $("mTarget").textContent = "";
     $("mCode").textContent = "CODE " + d.code;
-    const sId = d.striker && d.striker.id, nsId = d.nonStriker && d.nonStriker.id;
+   
+    let partnershipRuns = 0;
+let partnershipBalls = 0;
     const br = $("mBat"); br.innerHTML = "";
     Object.values(inn.batters || {}).forEach((b) => { if (b.out || b.id === sId || b.id === nsId) { const sr = b.b ? (b.r / b.b * 100).toFixed(0) : "0"; const cls = b.id === sId && !d.done ? "strike" : ""; br.innerHTML += `<tr><td class="${cls}">${esc(b.name)}${b.out ? " (out)" : ""}</td><td>${b.r}</td><td>${b.b}</td><td>${b.f}</td><td>${b.s}</td><td>${sr}</td></tr>`; } });
     const wId = d.bowler && d.bowler.id; const wr = $("mBowl"); wr.innerHTML = "";
