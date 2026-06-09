@@ -323,8 +323,19 @@
   function snap() { history.push(JSON.stringify(M)); if (history.length > 50) history.shift(); }
   function guard() { if (!isScorer) { toast("View-only"); return true; } if (M.done) { toast("Match finished"); return true; } return false; }
   function swap() { const t = M.striker; M.striker = M.nonStriker; M.nonStriker = t; }
+function legalBall() {
+  const inn = curInn();
 
-  function legalBall() { const inn = curInn(); inn.balls++; inn.batters[M.striker.id].b++; inn.bowlers[M.bowler.id].balls++; if (inn.balls % 6 === 0) endOver(); checkEnd(); }
+  inn.balls++;
+  inn.batters[M.striker.id].b++;
+  inn.bowlers[M.bowler.id].balls++;
+
+  checkEnd();
+
+  if (!M.done && inn.balls % 6 === 0) {
+    endOver();
+  }
+}
 
   window.ball = function (r) {
     if (guard()) return; snap(); const inn = curInn(); const bt = inn.batters[M.striker.id]; const bw = inn.bowlers[M.bowler.id];
