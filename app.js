@@ -338,6 +338,10 @@ function legalBall() {
 }
 
   window.ball = function (r) {
+    if (!M.bowler) {
+  toast("Select bowler first");
+  return;
+}
     if (guard()) return; snap(); const inn = curInn(); const bt = inn.batters[M.striker.id]; const bw = inn.bowlers[M.bowler.id];
     inn.runs += r; bt.r += r; if (r === 4) bt.f++; if (r === 6) bt.s++; bw.runs += r; bw._ov += r; M.thisOver.push(String(r));
     if (r % 2 === 1) swap(); legalBall(); save(); if (r === 4) toast("FOUR!"); else if (r === 6) toast("SIX!");
@@ -479,7 +483,7 @@ window.extra = function(type){
   window.changeBowler = function () { if (guard()) return; const inn = curInn(); pickFromTeam(inn.bowlTeamId, "Select bowler", (bw) => { snap(); ensureBowl(inn, bw.id, bw.name); if (M.rules.oversPerBowler > 0) { const o = Math.floor(inn.bowlers[bw.id].balls / 6); if (o >= M.rules.oversPerBowler) toast("⚠ " + bw.name + " at over limit"); } M.bowler = bw; save(); }); };
 
   function endOver() {
-    const inn = curInn(); const bw = inn.bowlers[M.bowler.id]; if (bw._ov === 0) bw.maidens++; bw._ov = 0; swap();
+    const inn = curInn(); const bw = inn.bowlers[M.bowler.id]; if (bw._ov === 0) bw.maidens++; bw._ov = 0; swap();M.bowler = null;
     if (isScorer && !M.done) pickFromTeam(inn.bowlTeamId, "Next over — bowler", (nb) => { ensureBowl(inn, nb.id, nb.name); if (M.rules.oversPerBowler > 0) { const o = Math.floor(inn.bowlers[nb.id].balls / 6); if (o >= M.rules.oversPerBowler) toast("⚠ " + nb.name + " at over limit"); } M.bowler = nb; save(); });
     M.thisOver = [];
   }
