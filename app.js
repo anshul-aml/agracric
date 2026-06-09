@@ -390,6 +390,9 @@ window.extra = function(type){
         if(isNaN(extraRuns)) return;
 
         const total = 1 + extraRuns;
+      if (extraRuns % 2 === 1) {
+    swap();
+}
 
         inn.runs += total;
         bw.runs += total;
@@ -449,6 +452,9 @@ window.extra = function(type){
         if(isNaN(runs) || runs < 1) return;
 
         inn.runs += runs;
+      if (runs % 2 === 1) {
+    swap();
+}
 
         M.thisOver.push("B" + runs);
 
@@ -468,6 +474,9 @@ window.extra = function(type){
         if(isNaN(runs) || runs < 1) return;
 
         inn.runs += runs;
+      if (runs % 2 === 1) {
+    swap();
+}
 
         M.thisOver.push("LB" + runs);
 
