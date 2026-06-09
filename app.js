@@ -218,7 +218,7 @@
   // ====== MATCH MODEL ======
   let M = null, matchRef = null, isScorer = false, history = [];
   let pend = null; // pending setup before toss
-  function inningsObj(bId, bName, wId, wName) {
+function inningsObj(bId, bName, wId, wName) {
   return {
     batTeamId: bId,
     batTeamName: bName,
@@ -230,10 +230,10 @@
     balls: 0,
 
     extras: {
-      wides: 0,
-      noballs: 0,
-      byes: 0,
-      legbyes: 0
+      wd: 0,
+      nb: 0,
+      bye: 0,
+      lb: 0
     },
 
     batters: {},
@@ -395,6 +395,7 @@ window.extra = function(type){
 }
 
         inn.runs += total;
+      inn.extras.wd += total;
         bw.runs += total;
         bw._ov += total;
 
@@ -423,6 +424,7 @@ window.extra = function(type){
         const bt = inn.batters[M.striker.id];
 
         inn.runs += 1 + batRuns;
+      inn.extras.nb += 1;
 
         bt.r += batRuns;
 
@@ -452,6 +454,7 @@ window.extra = function(type){
         if(isNaN(runs) || runs < 1) return;
 
         inn.runs += runs;
+      inn.extras.bye += runs;
       if (runs % 2 === 1) {
     swap();
 }
@@ -474,6 +477,7 @@ window.extra = function(type){
         if(isNaN(runs) || runs < 1) return;
 
         inn.runs += runs;
+      inn.extras.lb += runs;
       if (runs % 2 === 1) {
     swap();
 }
@@ -608,7 +612,23 @@ let partnershipBalls = 0;
       if (!s.exists()) { toast("Not found"); return; } const d = s.val();
       let html = `<div class="card sb"><div class="teams">${esc(d.teamAName)} vs ${esc(d.teamBName)}</div><div class="big" style="font-size:22px">${esc(d.result || "Completed")}</div><div class="mt"><span class="pill">${d.code}</span></div></div>`;
       (d.innings || []).forEach((inn) => {
-        html += `<div class="card"><h3 style="font-size:15px;margin-bottom:8px">${esc(inn.batTeamName)} — ${inn.runs}/${inn.wkts} <span class="mut">(${oversStr(inn.balls)})</span></h3><table class="stat-tbl"><thead><tr><th>Batter</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead><tbody>`;
+html += `<div class="card"><h3 style="font-size:15px;margin-bottom:8px">${esc(inn.batTeamName)} — ${inn.runs}/${inn.wkts} <span class="mut">(${oversStr(inn.balls)})</span></h3>`;
+
+const ex = inn.extras || {
+  wd: 0,
+  nb: 0,
+  bye: 0,
+  lb: 0
+};
+
+html += `
+<div class="mut" style="margin-bottom:10px">
+  Extras ${ex.wd + ex.nb + ex.bye + ex.lb}
+  (Wd ${ex.wd}, Nb ${ex.nb}, B ${ex.bye}, Lb ${ex.lb})
+</div>
+`;
+
+html += `<table class="stat-tbl"><thead><tr><th>Batter</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead><tbody>`;
         Object.values(inn.batters || {}).forEach((b) => { const sr = b.b ? (b.r / b.b * 100).toFixed(0) : "0"; html += `<tr><td>${esc(b.name)}${b.out ? "" : " *"}</td><td>${b.r}</td><td>${b.b}</td><td>${b.f}</td><td>${b.s}</td><td>${sr}</td></tr>`; });
         html += '</tbody></table><hr/><table class="stat-tbl"><thead><tr><th>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th></tr></thead><tbody>';
         Object.values(inn.bowlers || {}).forEach((w) => { html += `<tr><td>${esc(w.name)}</td><td>${oversStr(w.balls)}</td><td>${w.maidens}</td><td>${w.runs}</td><td>${w.wkts}</td></tr>`; });
